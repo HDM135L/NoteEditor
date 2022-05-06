@@ -6,10 +6,10 @@ import os
 
 class CLS_Note(object):
     def __init__(self, noteinfo: dict, bpm, offset):
-        if noteinfo is None:
-            return
         # self.idx = -1
         self.bpm, self.offset = bpm, offset
+        if noteinfo is None:
+            return
         # self.noteinfo = noteinfo
         # notetest = dict(Type="test", Rail=-2, Length=0.0, StartTime=1.0, DelayTime=2.0)
         self.type = noteinfo["Type"]
@@ -47,31 +47,36 @@ class CLS_ChartManager(CLS_JsonSaver):
         self.noteNum = self.chartData["NoteNum"]
         self.load_all_notes()
 
-    def save_chart(self): # NOTE: API function (external use)
+    def save_chart(self):  # NOTE: API function (external use)
         """
         save all current existing note into chart data.
         (Export API)
         """
         self.chartData["NoteNum"] = self.noteNum
-        for note in self.noteList:
-            self.chartData["NoteList"][note.idx] = note.get_info()
+        newChartData = [0] * self.noteNum
+        for idx in range(self.noteNum):
+            newChartData[idx] = self.noteList[idx].get_info()
+        self.chartData["NoteList"] = newChartData
         self.save_content(self.chartData)
+        print("successfully saved current noteList")
 
-    def create_note(self, noteinfo=None,Type=None,Rail=None,SpawnBeat=None,TouchBeat=None,TimeLengthBeat=None): # NOTE: API function (external use)
+    def create_note(self, noteinfo=None, Type=None, Rail=None, SpawnBeat=None, TouchBeat=None,
+                    TimeLengthBeat=None):  # NOTE: API function (external use)
         """
         construct a new note and add to self.noteList.
         (Export API)
 
         :param noteinfo: create note with a dict of std noteinfo, if None, need the following 5 variables to construct a new note.
         """
-        #create note in either way
+        # create note in either way
         if noteinfo:
             newnote = CLS_Note(noteinfo, self.bpm, self.startOffset)
         else:
             newnote = CLS_Note(None, self.bpm, self.startOffset)
-            newnote.type,newnote.rail = Type,Rail
-            newnote.spawnBeat,newnote.touchBeat,newnote.timeLengthBeat = SpawnBeat,TouchBeat,TimeLengthBeat
+            newnote.type, newnote.rail = Type, Rail
+            newnote.spawnBeat, newnote.touchBeat, newnote.timeLengthBeat = SpawnBeat, TouchBeat, TimeLengthBeat
         self.add_note(newnote)
+        print("successfully add note to noteList,remember to save it to json!")
         return
 
     def add_note(self, note: CLS_Note):
