@@ -34,7 +34,7 @@ class CLS_DataManager(object):
         self.chartManagers = {} #difficulty name to CLS_ChartManager instance
         for difficulty in self.metadata["Difficulties"]:
             dname = difficulty["DifficultyName"]
-            chart_identifier = "chart"+difficulty.["Difficulty"]+".json"
+            chart_identifier = "chart"+ str(difficulty["Difficulty"])+".json"
             chartpath = os.path.join(rootpath, chart_identifier)
 
             self.chartManagers[dname] = CLS_ChartManager(chartpath)
@@ -58,3 +58,15 @@ class CLS_DataManager(object):
     def save_chart_by_difficulty(self, difficulty):
         self.chartManagers[difficulty].save_chart()
 
+if __name__ == "__main__":
+    DM = CLS_DataManager("./Charts/StillAlive")
+    CM = DM.chartManagers["Easy"]
+    notetest = dict(Type="test", Rail=-2, Length=0.0, StartTime=1.0, DelayTime=2.0)
+    CM.add_note(notetest)
+    CM.save_chart()
+
+# TODO:
+#  need to rearrange json by ascending StartTime.
+#  delete node option
+#  add difficulty
+#  add chart file
