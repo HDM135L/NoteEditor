@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>Managers.CLS_ChartManager</OriginalElement>
+  <nodes>
+    <node x="0.0" y="770.5">jsonIO.CLS_JsonSaver</node>
+    <node x="782.0" y="747.5">Managers.CLS_DataManager</node>
+    <node x="254.0" y="782.0">jsonIO.CLS_JsonReader</node>
+    <node x="474.0" y="713.0">Managers.CLS_Note</node>
+    <node x="410.0" y="0.0">typing.Hashable</node>
+    <node x="1.0" y="1091.0">Managers.CLS_ChartManager</node>
+    <node x="360.5" y="105.0">object</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="object" target="typing.Hashable">
+      <point x="0.0" y="-279.0" />
+      <point x="0.0" y="27.5" />
+    </edge>
+    <edge source="Managers.CLS_Note" target="object">
+      <point x="0.0" y="-164.0" />
+      <point x="618.0" y="693.0" />
+      <point x="517.375" y="693.0" />
+      <point x="31.375" y="279.0" />
+    </edge>
+    <edge source="jsonIO.CLS_JsonReader" target="object">
+      <point x="0.0" y="-95.0" />
+      <point x="354.0" y="693.0" />
+      <point x="454.625" y="693.0" />
+      <point x="-31.375" y="279.0" />
+    </edge>
+    <edge source="Managers.CLS_ChartManager" target="jsonIO.CLS_JsonSaver">
+      <point x="0.0" y="-141.0" />
+      <point x="0.0" y="106.5" />
+    </edge>
+    <edge source="jsonIO.CLS_JsonSaver" target="object">
+      <point x="0.0" y="-106.5" />
+      <point x="117.0" y="683.0" />
+      <point x="391.875" y="683.0" />
+      <point x="-94.125" y="279.0" />
+    </edge>
+    <edge source="Managers.CLS_DataManager" target="object">
+      <point x="0.0" y="-129.5" />
+      <point x="911.0" y="683.0" />
+      <point x="580.125" y="683.0" />
+      <point x="94.125" y="279.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.47351040918880155" x="541.0377251003596" y="403.96583392716167" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Inner Classes</Category>
+    <Category>Fields</Category>
+  </Categories>
+</Diagram>
+
