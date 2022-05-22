@@ -33,18 +33,6 @@ class CLS_Grid(object):
             4
             )
 
-    def draw(self):
-        for dict in self.content["NoteList"]:
-            self.drawImpl(
-                dict["Type"], 
-                dict["Rail"], 
-                int(dict["StartTime"]) - int(dict["DelayTime"]), 
-                int(dict["StartTime"]), 
-                int(dict["Length"]) + int(dict["StartTime"])
-                )
-        pygame.display.flip()
-
-
     def paint(self, start, notes):
         self.clean()
         self.drawTimeNum(start)
