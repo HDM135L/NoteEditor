@@ -1,7 +1,7 @@
 import pygame
 
-def sortKey(dict):
-    return dict["StartTime"]
+def sortKey(note):
+    return note["StartTime"]
 
 class CLS_Grid(object):
     def __init__(self, content):
@@ -12,7 +12,7 @@ class CLS_Grid(object):
         self.screen.fill([255, 255, 255])
         self.side = 110 #self.side length of a square
 
-    def drawTimeNum(self, start):
+    def drawBeatNum(self, start):
         font = pygame.font.Font(None, 50)
         for i in range(start, start + 8):
             surf = font.render(str(i), 1, [0, 0, 0])
@@ -35,8 +35,9 @@ class CLS_Grid(object):
 
     def paint(self, start, notes):
         self.clean()
-        self.drawTimeNum(start)
-        for dict in notes:
+        self.drawBeatNum(start)
+        for i in range(len(notes)):
+            dict = notes[i].get_info()
             if int(dict["StartTime"]) >= start or \
                 (int(dict["Length"]) + int(dict["StartTime"])) <= start + 7 or \
                 (int(dict["StartTime"]) < start and int(dict["Length"]) > 7):

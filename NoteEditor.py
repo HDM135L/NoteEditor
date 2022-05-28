@@ -2,38 +2,23 @@ import pygame, sys
 from jsonIO import CLS_JsonReader, CLS_JsonSaver
 from Music import CLS_Music
 from Grid import CLS_Grid
-
-#bound = "l" or "r"
-def binarySearch(list, target, bound):
-    left = 0
-    right = len(list)
-    while(left < right):
-        mid = int(left + (right - left) / 2)
-        if list[mid] < target:
-            left = mid + 1
-        elif list[mid] > target:
-            right = mid
-        else:
-            if bound == "l":
-                right = mid
-            else:
-                left = mid + 1
-    if bound == "l":
-        return left
-    else: 
-        return left - 1
-
+from Managers import *
 
 if __name__ == '__main__':
-    metapath = "C:\wjy\code\PYTHON\MUNECK_editor\chart5.json"
-    loader = CLS_JsonReader(metapath)
-    content = loader.get_content()
+    DM = CLS_DataManager("./Charts/StillAlive")
+    CM = DM.chartManagers["Easy"]
 
-    grid = CLS_Grid(content)
+    grid = CLS_Grid(CM.chartData)
     grid.clean()
 
-    music = CLS_Music("C:\wjy\music\Kankitsu - Chronomia.mp3")
+    music = CLS_Music(DM.musicpath)
     music.play()
+
+    offset = DM.metadata["ChartOffset"]
+    bpm = DM.metadata["BPM"]
+    beats = int((CM.chartData["Length"] - offset) * bpm / 60)
+
+    cur = 0
 
     while 1:
         for event in pygame.event.get():
@@ -48,8 +33,13 @@ if __name__ == '__main__':
                 # elif event.key == pygame.K_RIGHT:
                 #     pygame.mixer.music.set_pos(20)
                 #     #music.play()
-        grid.paint(int(pygame.mixer.music.get_pos() / 1000), content["NoteList"])
-        pygame.time.delay(1000)
+        if cur <= beats and pygame.mixer.music.get_busy() == True:
+            grid.paint(
+                cur, 
+                CM.noteList
+                )
+            cur += 1
+        pygame.time.delay(int((offset + 1 / bpm * 60) * 1000))
 
                 
             

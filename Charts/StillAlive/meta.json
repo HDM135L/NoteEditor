@@ -1,10 +1,11 @@
 {
     "Name": "Still Alive",
-    "MusicFile": "music.mp3",
+    "MusicFile": "still alive.mp3",
     "IllustrationFile": "illustration.jpg",
     "Artist": "Jonathan Coulton",
     "Illustrator": "Valve Corporation",
     "ChartOffset": 0.0,
+    "BPM": 120,
     "Difficulties": [
         {
             "DifficultyName": "Easy",

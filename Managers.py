@@ -107,7 +107,8 @@ class CLS_DataManager(object):
         reader.reread(self.metapath)
         self.metadata = reader.get_content()
         self.meta_saver = CLS_JsonSaver(self.metapath)
-
+        self.musicpath = os.path.join(rootpath, self.metadata["MusicFile"])
+        
         # get charts
         self.chartManagers = {}  # difficulty name to CLS_ChartManager instance
         for difficulty in self.metadata["Difficulties"]:
