@@ -1,4 +1,5 @@
 from typing import List, Any
+from Grid import sortKey
 
 from jsonIO import CLS_JsonReader, CLS_JsonSaver
 import os
@@ -33,6 +34,9 @@ class CLS_Note(object):
 
 class CLS_ChartManager(CLS_JsonSaver):
     noteList: List[CLS_Note]
+
+    def sortKey(note):
+        return note["StartTime"]
 
     def __init__(self, path):
         super(CLS_ChartManager, self).__init__(path)
@@ -83,6 +87,7 @@ class CLS_ChartManager(CLS_JsonSaver):
         # note.idx = self.noteNum
         self.noteNum += 1
         self.noteList.append(note)
+        self.noteList.sort(key = sortKey)
 
     def load_all_notes(self):
         idx = 0
@@ -93,9 +98,24 @@ class CLS_ChartManager(CLS_JsonSaver):
             idx += 1
         return
 
+    def delete_note(self, id):
+        self.noteNum -= 1
+        del self.noteList[id - 1]
+
+    def modify_note(self, id, noteinfo, Type, Rail, SpawnBeat, TouchBeat,
+                    TimeLengthBeat):
+        self.noteList[id - 1].type = Type
+        self.noteList[id - 1].rail = Rail
+        self.noteList[id - 1].spawnBeat = SpawnBeat
+        self.noteList[id - 1].touchBeat =TouchBeat
+        self.noteList[id - 1].timeLengthBeat = TimeLengthBeat
+        self.noteList.sort(key = sortKey)
 
 class CLS_DataManager(object):
-    def __init__(self, rootpath):
+    def __init__(self):
+        pass
+
+    def load(self, rootpath):
         """
         Manage all json data of a song.
         :param rootpath: the root directory path, should be ./Charts/SongName
@@ -106,7 +126,8 @@ class CLS_DataManager(object):
         self.metapath = os.path.join(rootpath, "meta.json")
         reader.reread(self.metapath)
         self.metadata = reader.get_content()
-        self.meta_saver = CLS_JsonSaver(self.metapath)
+        self.chartpath = os.path.join(rootpath, "chart5_output.json")
+        self.meta_saver = CLS_JsonSaver(self.chartpath)
         self.musicpath = os.path.join(rootpath, self.metadata["MusicFile"])
         
         # get charts

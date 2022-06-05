@@ -77,6 +77,6 @@ if __name__ == '__main__':
     metapath = "./Charts/StillAlive/meta.json"
     loader = CLS_JsonReader(metapath)
     content = loader.get_content()
-    content["Name"] = "Still Alive"
-    saver = CLS_JsonSaver(metapath, content)
-    saver.save_content()
+    content["Name"] = "StillAlive"
+    saver = CLS_JsonSaver(metapath)
+    saver.save_content(content)
