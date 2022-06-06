@@ -74,19 +74,25 @@ if __name__ == '__main__':
 
                 elif onClickButton(grid.buttonAdd):
                     music.stop()
+                    ready = False
                     CLS_AddNote(CM)
                     music.rewind()
                     disAbove = start = 0
+                    ready = True
                 elif onClickButton(grid.buttonDel):
                     music.stop()
+                    ready = False
                     CLS_DelNote(CM)
                     music.rewind()
                     disAbove = start = 0
+                    ready = True
                 elif onClickButton(grid.buttonMod):
                     music.stop()
+                    ready = False
                     CLS_ModNote(CM)
                     music.rewind()
                     disAbove = start = 0
+                    ready = True
         if ready == True:
             grid.paintMovingGrid(CM.noteList, bpm, start, disAbove)
             disAbove += delta
@@ -94,8 +100,6 @@ if __name__ == '__main__':
             if(disAbove == 0 and start + 1 <= CM.chartData["Length"]):
                 start += 1
             grid.clock.tick(bpm)
-            if 0 < grid.clock.get_fps() < bpm:
-                delta = round(bpm / grid.clock.get_fps())
 
 
                 
