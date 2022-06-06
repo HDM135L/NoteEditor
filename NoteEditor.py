@@ -54,7 +54,7 @@ if __name__ == '__main__':
                     DM.load(dirname)
                     CM = DM.chartManagers["Easy"]
 
-                    grid.load(CM.chartData)
+                    grid.load(CM.noteList)
 
                     music = CLS_Music(DM.musicpath, CM.chartData["Length"])
                     music.play()

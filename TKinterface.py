@@ -59,8 +59,8 @@ class CLS_AddNote(object):
         print("start beat: " + str(self.startBeat.get()))
         print("touch Beat: " + str(self.touchBeat.get()))
         print("time length Beat: " + str(self.timeLengthBeat.get()))
-        self.chartManager.create_note(None, self.noteType.get(), self.rail.get(), self.startBeat.get()
-                                    , self.touchBeat.get(), self.timeLengthBeat.get())
+        self.chartManager.create_note(None, self.noteType.get(), self.rail.get(), self.startBeat.get() - 1
+                                    , self.touchBeat.get() - 1, self.timeLengthBeat.get())
 
     # def save_current_notes_to_data(self):
     #     self.chartManager.save_chart()
@@ -151,8 +151,8 @@ class CLS_ModNote(object):
 
     def modifyNote(self, *args):
         self.note_info_check()
-        self.chartManager.modify_note(self.id.get(), None, self.noteType.get(), self.rail.get(), self.startBeat.get()
-                                    , self.touchBeat.get(), self.timeLengthBeat.get())
+        self.chartManager.modify_note(self.id.get(), None, self.noteType.get(), self.rail.get(), self.startBeat.get() - 1
+                                    , self.touchBeat.get() - 1, self.timeLengthBeat.get())
 
     def note_info_check(self):
         if self.noteType.get() == "flick":

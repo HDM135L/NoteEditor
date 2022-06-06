@@ -1,7 +1,7 @@
 import pygame
 
 def sortKey(note):
-    return note["StartTime"]
+    return note.touchBeat
 
 class CLS_Grid(object):
     def __init__(self):
@@ -20,7 +20,7 @@ class CLS_Grid(object):
 
     def load(self, content):
         self.content = content
-        self.content["NoteList"].sort(key = sortKey)
+        self.content.sort(key = sortKey)
 
     def drawBeatNum(self, start, disAbove):
         for i in range(start, start + 7):

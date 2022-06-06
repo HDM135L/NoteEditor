@@ -36,7 +36,7 @@ class CLS_ChartManager(CLS_JsonSaver):
     noteList: List[CLS_Note]
 
     def sortKey(note):
-        return note["StartTime"]
+        return note.touchBeat
 
     def __init__(self, path):
         super(CLS_ChartManager, self).__init__(path)
