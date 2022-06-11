@@ -4,7 +4,6 @@ class CLS_Music(object):
 
     def __init__(self, path, length):
         pygame.mixer.init()
-        #pygame.time.delay(1000)
         pygame.mixer.music.load(path)
         self.start = 0
         self.length = length
@@ -25,10 +24,8 @@ class CLS_Music(object):
         self.playing = pygame.mixer.music.get_busy()
         if self.playing:
             self.pause()
-            #pygame.mixer.music.stop()
         else:
             self.unpause()
-            #pygame.mixer.music.play()
 
     #get_position and set_position : in seconds
     def get_position(self):

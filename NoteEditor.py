@@ -16,13 +16,13 @@ CM = None
 
 if __name__ == '__main__':
     ready = False
+    loaded = False
 
     DM = CLS_DataManager()
 
     grid = CLS_Grid()
     grid.__init__()
     grid.clean()
-    # grid.drawButtons()
     pygame.display.flip()
 
     cur = 0
@@ -37,13 +37,13 @@ if __name__ == '__main__':
                 if event.key == pygame.K_SPACE:
                     music.toggle()
                     ready = not ready
-                elif event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_LEFT and ready:
                     music.fastBackward()
                     start = int(music.get_position())
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT and ready:
                     music.fastForward()
                     start = int(music.get_position())
-                elif event.key == pygame.K_r:
+                elif event.key == pygame.K_r and ready:
                     music.rewind()
                     disAbove = start = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -51,42 +51,45 @@ if __name__ == '__main__':
                 if onClickButton(grid.buttonLoad):
                     dirname = askdirectory()
                     #dirname = "./Charts/StillAlive"
-                    DM.load(dirname)
-                    CM = DM.chartManagers["Easy"]
+                    try:
+                        DM.load(dirname)
+                        CM = DM.chartManagers["Easy"]
 
-                    grid.load(CM.noteList)
+                        grid.load(CM.noteList)
 
-                    music = CLS_Music(DM.musicpath, CM.chartData["Length"])
-                    music.play()
+                        music = CLS_Music(DM.musicpath, CM.chartData["Length"])
+                        music.play()
 
-                    offset = DM.metadata["ChartOffset"]
-                    bpm = DM.metadata["BPM"]
-                    beats = int((CM.chartData["Length"] - offset) * bpm / 60)
-                    ready = True
+                        offset = DM.metadata["ChartOffset"]
+                        bpm = DM.metadata["BPM"]
+                        beats = int((CM.chartData["Length"] - offset) * bpm / 60)
+                        ready = True
+                        loaded = True
+                    except:
+                        pass
                     
-                elif onClickButton(grid.buttonSave):
+                elif onClickButton(grid.buttonSave) and loaded:
                     music.stop()
-                    # filename = asksaveasfilename(defaultextension='.json')
                     CM.save_chart()
                     tk.messagebox.showinfo(title = 'muneck', message = 'chart saved!')
                     music.rewind()
                     disAbove = start = 0
 
-                elif onClickButton(grid.buttonAdd):
+                elif onClickButton(grid.buttonAdd) and loaded:
                     music.stop()
                     ready = False
                     CLS_AddNote(CM)
                     music.rewind()
                     disAbove = start = 0
                     ready = True
-                elif onClickButton(grid.buttonDel):
+                elif onClickButton(grid.buttonDel) and loaded:
                     music.stop()
                     ready = False
                     CLS_DelNote(CM)
                     music.rewind()
                     disAbove = start = 0
                     ready = True
-                elif onClickButton(grid.buttonMod):
+                elif onClickButton(grid.buttonMod) and loaded:
                     music.stop()
                     ready = False
                     CLS_ModNote(CM)

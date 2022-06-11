@@ -45,10 +45,7 @@ class CLS_AddNote(object):
         # button add and save
         add_btn = ttk.Button(self.noteFrame, text="ADD", command=self.add_note_to_noteList)
         add_btn.grid(row=8, column=2, rowspan=2, columnspan=3)
-        # save_btn = ttk.Button(self.noteFrame, text="SAVE", command=self.save_current_notes_to_data)
-        # save_btn.grid(row=8, column=5, rowspan=2, columnspan=3)
         self.root.bind("<Return>", self.add_note_to_noteList)
-        # self.root.bind("<space>", self.save_current_notes_to_data)
         self.root.mainloop()
 
     def add_note_to_noteList(self, *args):
@@ -61,9 +58,6 @@ class CLS_AddNote(object):
         print("time length Beat: " + str(self.timeLengthBeat.get()))
         self.chartManager.create_note(None, self.noteType.get(), self.rail.get(), self.startBeat.get() - 1
                                     , self.touchBeat.get() - 1, self.timeLengthBeat.get())
-
-    # def save_current_notes_to_data(self):
-    #     self.chartManager.save_chart()
 
     def note_info_check(self):
         if self.noteType.get() == "flick":
@@ -87,10 +81,7 @@ class CLS_DelNote(object):
         # button add and save
         add_btn = ttk.Button(self.noteFrame, text="DEL", command=self.deleteNote)
         add_btn.grid(row=8, column=2, rowspan=2, columnspan=3)
-        # save_btn = ttk.Button(self.noteFrame, text="SAVE", command=self.save_current_notes_to_data)
-        # save_btn.grid(row=8, column=5, rowspan=2, columnspan=3)
         self.root.bind("<Return>", self.deleteNote)
-        # self.root.bind("<space>", self.save_current_notes_to_data)
         self.root.mainloop()
         
     def deleteNote(self, *args):
@@ -143,10 +134,7 @@ class CLS_ModNote(object):
         # button add and save
         add_btn = ttk.Button(self.noteFrame, text="MOD", command=self.modifyNote)
         add_btn.grid(row=8, column=2, rowspan=2, columnspan=3)
-        # save_btn = ttk.Button(self.noteFrame, text="SAVE", command=self.save_current_notes_to_data)
-        # save_btn.grid(row=8, column=5, rowspan=2, columnspan=3)
         self.root.bind("<Return>", self.modifyNote)
-        # self.root.bind("<space>", self.save_current_notes_to_data)
         self.root.mainloop()
 
     def modifyNote(self, *args):
@@ -158,30 +146,3 @@ class CLS_ModNote(object):
         if self.noteType.get() == "flick":
             self.timeLengthBeat.set(0)
 
-# if __name__ == "__main__":
-#     DM = CLS_DataManager()
-#     DM.load("./Charts/StillAlive")
-#     CM = DM.chartManagers["Easy"]
-#     CLS_NoteEditor(CM)
-"""
-feet = StringVar()
-feet_entry = ttk.Entry(mainframe, width=7, textvariable=feet)
-feet_entry.grid(column=2, row=1, sticky=(W, E))
-
-meters = StringVar()
-ttk.Label(mainframe, textvariable=meters).grid(column=2, row=2, sticky=(W, E))
-
-ttk.Button(mainframe, text="Calculate", command=calculate).grid(column=3, row=3, sticky=W)
-
-ttk.Label(mainframe, text="feet").grid(column=3, row=1, sticky=W)
-ttk.Label(mainframe, text="is equivalent to").grid(column=1, row=2, sticky=E)
-ttk.Label(mainframe, text="meters").grid(column=3, row=2, sticky=W)
-
-for child in mainframe.winfo_children():
-    child.grid_configure(padx=5, pady=5)
-
-feet_entry.focus()
-root.bind("<Return>", calculate)
-
-root.mainloop()
-"""

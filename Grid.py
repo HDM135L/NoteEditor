@@ -44,18 +44,6 @@ class CLS_Grid(object):
     def clean(self):
         self.screen.fill([255, 255, 255])
         self.drawButtons()
-        # for x in range(1, 6):
-        #     for y in range(1, 8):
-        #         square = [x*self.side, y*self.side, self.side, self.side]
-        #         pygame.draw.rect(self.screen, [0, 0, 0], square, 2)
-
-        # #draw a big rect to make the line width outside the same
-        # pygame.draw.rect(
-        #     self.screen, 
-        #     [0, 0, 0],
-        #     [self.side, self.side, self.side * 5, self.side * 7], 
-        #     4
-        #     )
 
     def drawButtons(self):
         #load
@@ -121,7 +109,6 @@ class CLS_Grid(object):
             )
         
     def drawGrid(self, disAbove):
-        #self.screen.fill([255, 255, 255])
         for x in range(1, 6):
             for y in range(0, 8):
                 square = [x*self.side, y*self.side + disAbove, self.side, self.side]
@@ -137,21 +124,14 @@ class CLS_Grid(object):
 
     def paintMovingGrid(self, notes, bpm, start, disAbove):
         self.clean()
-        #pygame.time.delay(100)
         self.drawGrid(disAbove)
-       # pygame.time.delay(100)
         self.drawBeatNum(start, disAbove)
-       # pygame.time.delay(100)
         self.paint(start, notes, disAbove)
-      #  pygame.time.delay(100)
         self.drawBlankSpace()
-       # pygame.time.delay(100)
         pygame.display.flip()
             
 
     def paint(self, start, notes, disAbove):
-        #self.clean()
-        #self.drawBeatNum(start)
         for i in range(len(notes)):
             if int(notes[i].touchBeat) >= start or \
                 (int(notes[i].timeLengthBeat) + int(notes[i].touchBeat)) <= start + 6 or \
@@ -162,9 +142,6 @@ class CLS_Grid(object):
                     round(notes[i].spawnBeat, 2) - start, 
                     round(notes[i].touchBeat, 2)- start, 
                     round((notes[i].timeLengthBeat + notes[i].touchBeat), 2) - start,
-                    # int(notes[i].spawnBeat) - start, 
-                    # int(notes[i].touchBeat)- start, 
-                    # int(notes[i].timeLengthBeat) + int(notes[i].touchBeat) - start,
                     disAbove,
                     i + 1
                     )
