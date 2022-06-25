@@ -4,6 +4,8 @@ from Grid import sortKey
 from jsonIO import CLS_JsonReader, CLS_JsonSaver
 import os
 
+def time2beat(time, offset, bpm):
+    return (time - offset) * bpm / 60
 
 class CLS_Note(object):
     def __init__(self, noteinfo: dict, bpm, offset):
@@ -15,12 +17,9 @@ class CLS_Note(object):
         # notetest = dict(Type="test", Rail=-2, Length=0.0, StartTime=1.0, DelayTime=2.0)
         self.type = noteinfo["Type"]
         self.rail = noteinfo["Rail"]
-        self.timeLengthBeat = self.time2beat(noteinfo["Length"])
-        self.spawnBeat = self.time2beat(noteinfo["StartTime"] - noteinfo["DelayTime"])
-        self.touchBeat = self.time2beat(noteinfo["StartTime"])
-
-    def time2beat(self, time):
-        return (time - self.offset) * self.bpm / 60
+        self.timeLengthBeat = time2beat(noteinfo["Length"], self.offset, self.bpm)
+        self.spawnBeat = time2beat(noteinfo["StartTime"] - noteinfo["DelayTime"], self.offset, self.bpm)
+        self.touchBeat = time2beat(noteinfo["StartTime"], self.offset, self.bpm)
 
     def beat2time(self, beat):
         return self.offset + beat / self.bpm * 60
@@ -49,6 +48,7 @@ class CLS_ChartManager(CLS_JsonSaver):
 
         self.noteList = []
         self.noteNum = self.chartData["NoteNum"]
+        self.chartLength = time2beat(self.chartData["Length"], self.startOffset, self.bpm)
         self.load_all_notes()
 
     def save_chart(self):  # NOTE: API function (external use)

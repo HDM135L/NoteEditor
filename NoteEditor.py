@@ -12,6 +12,9 @@ def onClickButton(button):
     return button[0] <= x <= button[0] + button[2] \
             and button[1] <= y <= button[1] + button[3]
 
+def time2beat(time, offset, bpm):
+    return (time - offset) * bpm / 60
+
 CM = None
 
 if __name__ == '__main__':
@@ -39,10 +42,10 @@ if __name__ == '__main__':
                     ready = not ready
                 elif event.key == pygame.K_LEFT and ready:
                     music.fastBackward()
-                    start = int(music.get_position())
+                    start = int(time2beat(int(music.get_position()), DM.metadata["ChartOffset"], DM.metadata["BPM"]))
                 elif event.key == pygame.K_RIGHT and ready:
                     music.fastForward()
-                    start = int(music.get_position())
+                    start = int(time2beat(int(music.get_position()), DM.metadata["ChartOffset"], DM.metadata["BPM"]))
                 elif event.key == pygame.K_r and ready:
                     music.rewind()
                     disAbove = start = 0
@@ -100,7 +103,7 @@ if __name__ == '__main__':
             grid.paintMovingGrid(CM.noteList, bpm, start, disAbove)
             disAbove += delta
             disAbove = disAbove % (grid.side + 1)
-            if(disAbove == 0 and start + 1 <= CM.chartData["Length"]):
+            if(disAbove == 0 and start + 1 <= CM.chartLength):
                 start += 1
             grid.clock.tick(bpm)
 
