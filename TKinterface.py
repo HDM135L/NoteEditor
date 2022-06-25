@@ -102,8 +102,10 @@ class CLS_ModNote(object):
         #noteID /label/entry
         self.id = IntVar()
         ttk.Label(self.noteFrame, text="更改NOTE编号(NoteID to be modified):").grid(row=2, column=1, rowspan=1, columnspan=2)
-        ttk.Entry(self.noteFrame, textvariable=self.id).grid(row=2, column=3, rowspan=1, columnspan=4)
-
+        ttk.Entry(self.noteFrame, textvariable=self.id).grid(row=2, column=3, rowspan=1, columnspan=2)
+        btn = ttk.Button(self.noteFrame, text="Confirm", 
+        command=lambda: self.getNote(self.id.get()))
+        btn.grid(row=2, column=5, rowspan=1, columnspan=2)
         # note type /radioButton
         self.noteType = StringVar()
         self.noteType.set('flick')
@@ -142,7 +144,38 @@ class CLS_ModNote(object):
         self.chartManager.modify_note(self.id.get(), None, self.noteType.get(), self.rail.get(), self.startBeat.get() - 1
                                     , self.touchBeat.get() - 1, self.timeLengthBeat.get())
 
+    def getNote(self, num):
+        info = self.chartManager.noteList[num - 1].get_info()
+        self.noteType.set(info[0])
+        self.rail.set(info[1])
+        self.startBeat.set(info[2])
+        self.touchBeat.set(info[3])
+        self.timeLengthBeat.set(info[4])
+
     def note_info_check(self):
         if self.noteType.get() == "flick":
             self.timeLengthBeat.set(0)
 
+class CLS_AdjOffset(object):
+    def __init__(self, chartManager: CLS_ChartManager):
+        self.chartManager = chartManager
+        version = "v0.1"
+        self.root = Tk()
+        self.root.title("MUNECK Node Editor" + version)
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
+        self.noteFrame = ttk.Frame(self.root, padding="3 3 12 12")
+        self.noteFrame.grid(column=1, row=1, columnspan=8, rowspan=9, sticky=(N, W, E, S))
+
+        self.offset = IntVar()
+        ttk.Label(self.noteFrame, text="偏移值(Offset) in seconds:").grid(row=5, column=1, rowspan=1, columnspan=2)
+        ttk.Entry(self.noteFrame, textvariable=self.offset).grid(row=5, column=3, rowspan=1, columnspan=4)
+        # button add and save
+        add_btn = ttk.Button(self.noteFrame, text="ADJ", command=self.adjOffset)
+        add_btn.grid(row=8, column=2, rowspan=2, columnspan=3)
+        self.root.bind("<Return>", self.adjOffset)
+        self.root.mainloop()
+        
+    def adjOffset(self, *args):
+        self.chartManager.startOffset = self.offset.get()

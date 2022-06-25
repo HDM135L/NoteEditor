@@ -24,11 +24,14 @@ class CLS_Note(object):
     def beat2time(self, beat):
         return self.offset + beat / self.bpm * 60
 
-    def get_info(self):
+    def revertBeatToTimeInfo(self):
         st = self.beat2time(self.touchBeat)
         dt = st - self.beat2time(self.spawnBeat)
         tl = self.beat2time(self.timeLengthBeat) - self.offset
         return dict(Type=self.type, Rail=self.rail, Length=tl, StartTime=st, DelayTime=dt)
+
+    def get_info(self):
+        return [self.type, self.rail, self.spawnBeat, self.touchBeat, self.timeLengthBeat]
 
 
 class CLS_ChartManager(CLS_JsonSaver):
@@ -59,7 +62,7 @@ class CLS_ChartManager(CLS_JsonSaver):
         self.chartData["NoteNum"] = self.noteNum
         newChartData = [0] * self.noteNum
         for idx in range(self.noteNum):
-            newChartData[idx] = self.noteList[idx].get_info()
+            newChartData[idx] = self.noteList[idx].revertBeatToTimeInfo()
         self.chartData["NoteList"] = newChartData
         self.save_content(self.chartData)
         print("successfully saved current noteList")

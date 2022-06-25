@@ -6,14 +6,14 @@ from Grid import CLS_Grid
 from Managers import *
 import tkinter as tk 
 from tkinter.filedialog import *
-from TKinterface import CLS_AddNote, CLS_DelNote, CLS_ModNote
+from TKinterface import *
 
 def onClickButton(button):
     return button[0] <= x <= button[0] + button[2] \
             and button[1] <= y <= button[1] + button[3]
 
-def time2beat(time, offset, bpm):
-    return (time - offset) * bpm / 60
+def time2beat(time, bpm):
+    return time * bpm / 60
 
 CM = None
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     cur = 0
     start = 0
     disAbove = 0
-    delta = 1
+    delta = 10
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -42,10 +42,10 @@ if __name__ == '__main__':
                     ready = not ready
                 elif event.key == pygame.K_LEFT and ready:
                     music.fastBackward()
-                    start = int(time2beat(int(music.get_position()), DM.metadata["ChartOffset"], DM.metadata["BPM"]))
+                    start = int(time2beat(music.get_position(), DM.metadata["ChartOffset"], DM.metadata["BPM"]))
                 elif event.key == pygame.K_RIGHT and ready:
                     music.fastForward()
-                    start = int(time2beat(int(music.get_position()), DM.metadata["ChartOffset"], DM.metadata["BPM"]))
+                    start = int(time2beat(music.get_position(), DM.metadata["ChartOffset"], DM.metadata["BPM"]))
                 elif event.key == pygame.K_r and ready:
                     music.rewind()
                     disAbove = start = 0
@@ -72,40 +72,46 @@ if __name__ == '__main__':
                         pass
                     
                 elif onClickButton(grid.buttonSave) and loaded:
-                    music.stop()
+                    music.pause()
                     CM.save_chart()
                     tk.messagebox.showinfo(title = 'muneck', message = 'chart saved!')
-                    music.rewind()
-                    disAbove = start = 0
+                    music.unpause()
+                    ready = True
 
                 elif onClickButton(grid.buttonAdd) and loaded:
-                    music.stop()
+                    music.pause()
                     ready = False
                     CLS_AddNote(CM)
-                    music.rewind()
-                    disAbove = start = 0
+                    music.unpause()
                     ready = True
                 elif onClickButton(grid.buttonDel) and loaded:
-                    music.stop()
+                    music.pause()
                     ready = False
                     CLS_DelNote(CM)
-                    music.rewind()
-                    disAbove = start = 0
+                    music.unpause()
                     ready = True
                 elif onClickButton(grid.buttonMod) and loaded:
-                    music.stop()
+                    music.pause()
                     ready = False
                     CLS_ModNote(CM)
-                    music.rewind()
-                    disAbove = start = 0
+                    music.unpause()
                     ready = True
-        if ready == True:
-            grid.paintMovingGrid(CM.noteList, bpm, start, disAbove)
+                elif onClickButton(grid.buttonAdjustOffset) and loaded:
+                    music.pause()
+                    ready = False
+                    CLS_AdjOffset(CM)
+                    music.unpause()
+                    ready = True
+        if ready == True and start < CM.chartLength:
+            beatOffset = int(time2beat(CM.startOffset, DM.metadata["BPM"]))
+            grid.paintMovingGrid(CM.noteList, start, disAbove, round(music.get_position(), 2), beatOffset)
             disAbove += delta
             disAbove = disAbove % (grid.side + 1)
-            if(disAbove == 0 and start + 1 <= CM.chartLength):
-                start += 1
-            grid.clock.tick(bpm)
+            if(disAbove <= delta):
+                # start += 1
+                start = int(time2beat(music.get_position(), DM.metadata["BPM"]) + 0.5)
+                
+            grid.clock.tick(int(DM.metadata["BPM"] * grid.side / (60 * delta)))
 
 
                 

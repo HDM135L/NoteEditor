@@ -15,6 +15,7 @@ class CLS_Grid(object):
         self.buttonAdd = [self.side * 10, self.side, self.side * 2, self.side]
         self.buttonDel = [self.side * 10, self.side * 4, self.side * 2, self.side]
         self.buttonMod = [self.side * 10, self.side * 7, self.side * 2, self.side]
+        self.buttonAdjustOffset = [self.side * 7, self.side * 7, self.side * 2, self.side]
         self.font1 = pygame.font.Font(None, 50)
         self.font2 = pygame.font.Font(None, 100)
 
@@ -22,9 +23,9 @@ class CLS_Grid(object):
         self.content = content
         self.content.sort(key = sortKey)
 
-    def drawBeatNum(self, start, disAbove):
+    def drawBeatNum(self, start, disAbove, now):
         for i in range(start, start + 7):
-            s = str(int(i / 4) + 1) + '.' + str(i % 4 + 1)
+            s = str(i / 4)
             surf = self.font1.render(s, 1, [0, 0, 0])
             self.screen.blit(
                 surf, 
@@ -34,8 +35,10 @@ class CLS_Grid(object):
                 ]
             )
         cur = round((start + 1 + disAbove / 110), 2)
-        surf = self.font1.render(str(cur), 1, [0, 237, 232])
-        self.screen.blit(surf, [self.side * 6 + 60, self.side * 7 - 20])
+        surf1 = self.font1.render(str(cur) + "beats", 1, [0, 237, 232])
+        self.screen.blit(surf1, [self.side * 6 + 60, self.side * 7 - 20])
+        surf2 = self.font1.render(str(now) + "s", 1, [0, 237, 232])
+        self.screen.blit(surf2, [self.side * 6 + 60, self.side * 7 + 20])
         
     def write(self, font, content, color, pos):
         surf = font.render(content, 1, color)
@@ -80,12 +83,20 @@ class CLS_Grid(object):
             [237, 125, 49],
             self.buttonMod, 
             0
-        )        
+        )      
+        #change offset
+        pygame.draw.rect(
+            self.screen, 
+            [237, 125, 49],
+            self.buttonAdjustOffset, 
+            0
+        )  
         self.write(self.font2, "load", [0, 0, 0], [self.buttonLoad[0] + 40, self.buttonLoad[1] + 20])
         self.write(self.font2,"save", [0, 0, 0], [self.buttonSave[0] + 40, self.buttonSave[1] + 20])
         self.write(self.font2,"add", [0, 0, 0], [self.buttonAdd[0] + 45, self.buttonAdd[1] + 20])
         self.write(self.font2,"del", [0, 0, 0], [self.buttonDel[0] + 45, self.buttonDel[1] + 20])
-        self.write(self.font2,"mod", [0, 0, 0], [self.buttonMod[0] + 45, self.buttonMod[1] + 20])      
+        self.write(self.font2,"mod", [0, 0, 0], [self.buttonMod[0] + 45, self.buttonMod[1] + 20])
+        self.write(self.font1,"adjust offset", [0, 0, 0], [self.buttonAdjustOffset[0] + 10, self.buttonAdjustOffset[1] + 40])      
 
     def drawBlankSpace(self):
         pygame.draw.rect(
@@ -122,16 +133,16 @@ class CLS_Grid(object):
             4
             )
 
-    def paintMovingGrid(self, notes, bpm, start, disAbove):
+    def paintMovingGrid(self, notes, start, disAbove, now, offset):
         self.clean()
         self.drawGrid(disAbove)
-        self.drawBeatNum(start, disAbove)
-        self.paint(start, notes, disAbove)
+        self.drawBeatNum(start, disAbove, now)
+        self.paint(start, notes, disAbove, offset)
         self.drawBlankSpace()
         pygame.display.flip()
             
 
-    def paint(self, start, notes, disAbove):
+    def paint(self, start, notes, disAbove, offset):
         for i in range(len(notes)):
             if int(notes[i].touchBeat) >= start or \
                 (int(notes[i].timeLengthBeat) + int(notes[i].touchBeat)) <= start + 6 or \
@@ -142,7 +153,7 @@ class CLS_Grid(object):
                     round(notes[i].spawnBeat, 2) - start, 
                     round(notes[i].touchBeat, 2)- start, 
                     round((notes[i].timeLengthBeat + notes[i].touchBeat), 2) - start,
-                    disAbove,
+                    disAbove - offset * self.side,
                     i + 1
                     )
 
