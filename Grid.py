@@ -25,7 +25,7 @@ class CLS_Grid(object):
 
     def drawBeatNum(self, start, disAbove, now):
         for i in range(start, start + 7):
-            s = str(i / 4)
+            s = str(i / 4 + 1)
             surf = self.font1.render(s, 1, [0, 0, 0])
             self.screen.blit(
                 surf, 

@@ -42,10 +42,10 @@ if __name__ == '__main__':
                     ready = not ready
                 elif event.key == pygame.K_LEFT and ready:
                     music.fastBackward()
-                    start = int(time2beat(music.get_position(), DM.metadata["ChartOffset"], DM.metadata["BPM"]))
+                    start = int(time2beat(music.get_position(), DM.metadata["BPM"]))
                 elif event.key == pygame.K_RIGHT and ready:
                     music.fastForward()
-                    start = int(time2beat(music.get_position(), DM.metadata["ChartOffset"], DM.metadata["BPM"]))
+                    start = int(time2beat(music.get_position(), DM.metadata["BPM"]))
                 elif event.key == pygame.K_r and ready:
                     music.rewind()
                     disAbove = start = 0
@@ -103,6 +103,7 @@ if __name__ == '__main__':
                     music.unpause()
                     ready = True
         if ready == True and start < CM.chartLength:
+            print(start)
             beatOffset = int(time2beat(CM.startOffset, DM.metadata["BPM"]))
             grid.paintMovingGrid(CM.noteList, start, disAbove, round(music.get_position(), 2), beatOffset)
             disAbove += delta
