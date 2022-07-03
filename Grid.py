@@ -5,12 +5,12 @@ def sortKey(note):
 
 class CLS_Grid(object):
     def __init__(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode([1540, 990])
-        self.screen.fill([255, 255, 255])
         self.side = 110 #self.side length of a square
         self.rowNum = 7 #number of rows in a page
         self.colNum = 5 #number of columns in a page
+        pygame.init()
+        self.screen = pygame.display.set_mode([self.side * 14, self.side * (self.rowNum + 2)])
+        self.screen.fill([255, 255, 255])
         self.clock = pygame.time.Clock()
         self.buttonLoad = [self.side * (self.colNum + 2), self.side, self.side * 2, self.side]
         self.buttonSave = [self.side * (self.colNum + 2), self.side * 4, self.side * 2, self.side]
@@ -20,8 +20,8 @@ class CLS_Grid(object):
         self.buttonAdjustOffset = [self.side * (self.colNum + 2), self.side * 7, self.side * 2, self.side]
         self.buttonFH = [self.side * (self.colNum + 2), self.side * 2.5, self.side + 10, self.side]
         self.buttonA = [self.side * (self.colNum + 3.5) + 10, self.side * 2.5, self.side, self.side]
-        self.font1 = pygame.font.Font(None, 50)
-        self.font2 = pygame.font.Font(None, 100)
+        self.font1 = pygame.font.Font(None, self.side * 5 // 11)
+        self.font2 = pygame.font.Font(None, self.side * 10 // 11)
         self.inFHmode = False
         self.inAmode = False
         self.grid = [self.side, self.side, self.side * self.colNum, self.side * self.rowNum]
@@ -112,14 +112,15 @@ class CLS_Grid(object):
             self.buttonA, 
             0
         )
-        self.write(self.font2, "load", [0, 0, 0], [self.buttonLoad[0] + 40, self.buttonLoad[1] + 20])
-        self.write(self.font2,"save", [0, 0, 0], [self.buttonSave[0] + 40, self.buttonSave[1] + 20])
-        self.write(self.font2,"add", [0, 0, 0], [self.buttonAdd[0] + 45, self.buttonAdd[1] + 20])
-        self.write(self.font2,"del", [0, 0, 0], [self.buttonDel[0] + 45, self.buttonDel[1] + 20])
-        self.write(self.font2,"mod", [0, 0, 0], [self.buttonMod[0] + 45, self.buttonMod[1] + 20])
-        self.write(self.font1,"adjust offset", [0, 0, 0], [self.buttonAdjustOffset[0] + 10, self.buttonAdjustOffset[1] + 40])
-        self.write(self.font2,"F/H", [0, 0, 0], [self.buttonFH[0] + 5, self.buttonFH[1] + 20])
-        self.write(self.font2,"A", [0, 0, 0], [self.buttonA[0] + 30, self.buttonA[1] + 20])    
+        adj = self.side * 4 / 11
+        self.write(self.font2, "load", [0, 0, 0], [self.buttonLoad[0] + adj, self.buttonLoad[1] + adj * 0.5])
+        self.write(self.font2,"save", [0, 0, 0], [self.buttonSave[0] + adj, self.buttonSave[1] + adj * 0.5])
+        self.write(self.font2,"add", [0, 0, 0], [self.buttonAdd[0] + adj * 1.125, self.buttonAdd[1] + adj * 0.5])
+        self.write(self.font2,"del", [0, 0, 0], [self.buttonDel[0] + adj * 1.125, self.buttonDel[1] + adj * 0.5])
+        self.write(self.font2,"mod", [0, 0, 0], [self.buttonMod[0] + adj * 1.125, self.buttonMod[1] + adj * 0.5])
+        self.write(self.font1,"adjust offset", [0, 0, 0], [self.buttonAdjustOffset[0] + adj * 0.25, self.buttonAdjustOffset[1] + adj])
+        self.write(self.font2,"F/H", [0, 0, 0], [self.buttonFH[0] + adj * 0.125, self.buttonFH[1] + adj * 0.5])
+        self.write(self.font2,"A", [0, 0, 0], [self.buttonA[0] + adj * 0.75, self.buttonA[1] +  adj * 0.5])    
 
     def drawBlankSpace(self):
         pygame.draw.rect(
