@@ -86,6 +86,15 @@ class CLS_ChartManager(CLS_JsonSaver):
         print("successfully add note to noteList,remember to save it to json!")
         return
 
+    def get_id(self, Type, Rail, SpawnBeat, TouchBeat,TimeLengthBeat):
+        for i in range(len(self.noteList)):
+            if self.noteList[i].type == Type and \
+        self.noteList[i].rail == Rail and \
+        self.noteList[i].spawnBeat == SpawnBeat and \
+        self.noteList[i].touchBeat == TouchBeat and \
+        self.noteList[i].timeLengthBeat == TimeLengthBeat:
+                return i + 1
+
     def add_note(self, note: CLS_Note):
         # note.idx = self.noteNum
         self.noteNum += 1

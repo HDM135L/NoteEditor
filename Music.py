@@ -47,3 +47,6 @@ class CLS_Music(object):
     def rewind(self):
         self.start = 0
         self.play()
+
+    def isPlaying(self):
+        return pygame.mixer.music.get_busy()

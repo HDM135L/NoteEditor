@@ -9,36 +9,43 @@ class CLS_Grid(object):
         self.screen = pygame.display.set_mode([1540, 990])
         self.screen.fill([255, 255, 255])
         self.side = 110 #self.side length of a square
+        self.rowNum = 7 #number of rows in a page
+        self.colNum = 5 #number of columns in a page
         self.clock = pygame.time.Clock()
-        self.buttonLoad = [self.side * 7, self.side, self.side * 2, self.side]
-        self.buttonSave = [self.side * 7, self.side * 4, self.side * 2, self.side]
-        self.buttonAdd = [self.side * 10, self.side, self.side * 2, self.side]
-        self.buttonDel = [self.side * 10, self.side * 4, self.side * 2, self.side]
-        self.buttonMod = [self.side * 10, self.side * 7, self.side * 2, self.side]
-        self.buttonAdjustOffset = [self.side * 7, self.side * 7, self.side * 2, self.side]
+        self.buttonLoad = [self.side * (self.colNum + 2), self.side, self.side * 2, self.side]
+        self.buttonSave = [self.side * (self.colNum + 2), self.side * 4, self.side * 2, self.side]
+        self.buttonAdd = [self.side * (self.colNum + 5), self.side, self.side * 2, self.side]
+        self.buttonDel = [self.side * (self.colNum + 5), self.side * 4, self.side * 2, self.side]
+        self.buttonMod = [self.side * (self.colNum + 5), self.side * 7, self.side * 2, self.side]
+        self.buttonAdjustOffset = [self.side * (self.colNum + 2), self.side * 7, self.side * 2, self.side]
+        self.buttonFH = [self.side * (self.colNum + 2), self.side * 2.5, self.side + 10, self.side]
+        self.buttonA = [self.side * (self.colNum + 3.5) + 10, self.side * 2.5, self.side, self.side]
         self.font1 = pygame.font.Font(None, 50)
         self.font2 = pygame.font.Font(None, 100)
+        self.inFHmode = False
+        self.inAmode = False
+        self.grid = [self.side, self.side, self.side * self.colNum, self.side * self.rowNum]
 
     def load(self, content):
         self.content = content
         self.content.sort(key = sortKey)
 
     def drawBeatNum(self, start, disAbove, now):
-        for i in range(start, start + 7):
+        for i in range(start, start + self.rowNum):
             s = str(i / 4 + 1)
             surf = self.font1.render(s, 1, [0, 0, 0])
             self.screen.blit(
                 surf, 
                 [
-                    self.side * 6 + 10, 
-                    self.side * (start + 7 - i) - 15 + disAbove
+                    self.side * (self.colNum + 1) + 10, 
+                    self.side * (start + self.rowNum - i) - 15 + disAbove
                 ]
             )
-        cur = round((start + 1 + disAbove / 110), 2)
+        cur = round((start + disAbove / 110), 2)
         surf1 = self.font1.render(str(cur) + "beats", 1, [0, 237, 232])
-        self.screen.blit(surf1, [self.side * 6 + 60, self.side * 7 - 20])
+        self.screen.blit(surf1, [self.side * (self.colNum + 1) + 60, self.side * self.rowNum - 20])
         surf2 = self.font1.render(str(now) + "s", 1, [0, 237, 232])
-        self.screen.blit(surf2, [self.side * 6 + 60, self.side * 7 + 20])
+        self.screen.blit(surf2, [self.side * (self.colNum + 1) + 60, self.side * self.rowNum + 20])
         
     def write(self, font, content, color, pos):
         surf = font.render(content, 1, color)
@@ -91,37 +98,53 @@ class CLS_Grid(object):
             self.buttonAdjustOffset, 
             0
         )  
+        #f/h, meaning flick or hold
+        pygame.draw.rect(
+            self.screen, 
+            [204, 204, 204] if self.inFHmode else [255, 174, 201],
+            self.buttonFH, 
+            0
+        )
+        #a, meaning avoid
+        pygame.draw.rect(
+            self.screen, 
+            [204, 204, 204] if self.inAmode else [181, 230, 29],
+            self.buttonA, 
+            0
+        )
         self.write(self.font2, "load", [0, 0, 0], [self.buttonLoad[0] + 40, self.buttonLoad[1] + 20])
         self.write(self.font2,"save", [0, 0, 0], [self.buttonSave[0] + 40, self.buttonSave[1] + 20])
         self.write(self.font2,"add", [0, 0, 0], [self.buttonAdd[0] + 45, self.buttonAdd[1] + 20])
         self.write(self.font2,"del", [0, 0, 0], [self.buttonDel[0] + 45, self.buttonDel[1] + 20])
         self.write(self.font2,"mod", [0, 0, 0], [self.buttonMod[0] + 45, self.buttonMod[1] + 20])
-        self.write(self.font1,"adjust offset", [0, 0, 0], [self.buttonAdjustOffset[0] + 10, self.buttonAdjustOffset[1] + 40])      
+        self.write(self.font1,"adjust offset", [0, 0, 0], [self.buttonAdjustOffset[0] + 10, self.buttonAdjustOffset[1] + 40])
+        self.write(self.font2,"F/H", [0, 0, 0], [self.buttonFH[0] + 5, self.buttonFH[1] + 20])
+        self.write(self.font2,"A", [0, 0, 0], [self.buttonA[0] + 30, self.buttonA[1] + 20])    
 
     def drawBlankSpace(self):
         pygame.draw.rect(
             self.screen, 
             [255, 255, 255],
-            [0, 0, self.side * 7, self.side], 
+            [0, 0, self.side * (self.colNum + 2), self.side], 
             0
             )
         pygame.draw.rect(
             self.screen, 
             [255, 255, 255],
-            [0, self.side * 8, self.side * 7, self.side], 
+            [0, self.side * (self.rowNum + 1), self.side * (self.colNum + 2), self.side], 
             0
             )
         pygame.draw.line(
             self.screen, 
             [0, 237, 232], 
-            [self.side - 30, self.side * 7 - 5], 
-            [self.side * 6 + 30, self.side * 7 - 5],
+            [self.side - 30, self.side * self.rowNum - 5], 
+            [self.side * (self.colNum + 1) + 30, self.side * self.rowNum - 5],
             7
             )
         
     def drawGrid(self, disAbove):
-        for x in range(1, 6):
-            for y in range(0, 8):
+        for x in range(1, self.colNum + 1):
+            for y in range(0, self.rowNum + 1):
                 square = [x*self.side, y*self.side + disAbove, self.side, self.side]
                 pygame.draw.rect(self.screen, [0, 0, 0], square, 2)
 
@@ -129,7 +152,7 @@ class CLS_Grid(object):
         pygame.draw.rect(
             self.screen, 
             [0, 0, 0],
-            [self.side, disAbove, self.side * 5, self.side * 8], 
+            [self.side, disAbove, self.side * self.colNum, self.side * (self.rowNum + 1)], 
             4
             )
 
@@ -145,8 +168,8 @@ class CLS_Grid(object):
     def paint(self, start, notes, disAbove, offset):
         for i in range(len(notes)):
             if int(notes[i].touchBeat) >= start or \
-                (int(notes[i].timeLengthBeat) + int(notes[i].touchBeat)) <= start + 6 or \
-                (int(notes[i].touchBeat) < start and int(notes[i].timeLengthBeat) > 6):
+                (int(notes[i].timeLengthBeat) + int(notes[i].touchBeat)) <= (start + self.colNum + 1) or \
+                (int(notes[i].touchBeat) < start and int(notes[i].timeLengthBeat) > (self.colNum + 1)):
                 self.drawImpl(
                     notes[i].type, 
                     notes[i].rail, 
@@ -165,15 +188,15 @@ class CLS_Grid(object):
     def drawImpl(self, noteType, lane, appearTime, touchLineTime, allThroughLineTime, disAbove, num): 
         color = {'flick' : [237, 28, 36], 'hold' : [255, 174, 201], 'avoid' : [181, 230, 29]}
         length = {
-            'flick' : 10, 
+            'flick' : self.side / 11, 
             'hold' : (allThroughLineTime - touchLineTime) * self.side, 
             'avoid' : (allThroughLineTime - touchLineTime) * self.side
             }
-        noteLocAdj ={'flick' : 0, 'hold' : 0, 'avoid' : 0}
+        noteLocAdj ={'flick' : - self.side / 11, 'hold' : 0, 'avoid' : 0}
         numLocAdj = {
-            'flick' : [5, -35], 
-            'hold' : [10, 10], 
-            'avoid' : [10, 10]
+            'flick' : [self.side / 22, - self.side * 7 / 22], 
+            'hold' : [self.side / 11, self.side / 11], 
+            'avoid' : [self.side / 11, self.side / 11]
             }
         #->  []
         #    |
@@ -182,8 +205,8 @@ class CLS_Grid(object):
             self.screen, 
             color[noteType], 
             [
-                (lane + 3) * self.side, 
-                (7 - allThroughLineTime) * self.side + noteLocAdj[noteType] + disAbove, 
+                (lane + int((self.colNum + 1) / 2)) * self.side, 
+                (self.rowNum - allThroughLineTime) * self.side + noteLocAdj[noteType] + disAbove, 
                 self.side, 
                 length[noteType]
             ], 
@@ -196,10 +219,10 @@ class CLS_Grid(object):
             self.screen, 
             [195, 195, 195], 
             [
-                (lane + 3) * self.side + 0.5 * self.side - 5, 
-                (7 - touchLineTime) * self.side - noteLocAdj[noteType] + disAbove, 
-                10, 
-                (touchLineTime - appearTime) * self.side + noteLocAdj[noteType]
+                (lane + int((self.colNum + 1) / 2)) * self.side + 0.5 * self.side - 5, 
+                (self.rowNum - touchLineTime) * self.side + noteLocAdj[noteType] + disAbove, 
+                self.side / 11, 
+                (touchLineTime - appearTime) * self.side - noteLocAdj[noteType]
             ], 
             0
             )
@@ -210,10 +233,10 @@ class CLS_Grid(object):
             self.screen, 
             [195, 195, 195], 
             [
-                (lane + 3) * self.side + 10, 
-                (7 - appearTime) * self.side - 6 + disAbove, 
+                (lane + int((self.colNum + 1) / 2)) * self.side + 10, 
+                (self.rowNum - appearTime) * self.side - 6 + disAbove, 
                 self.side - 20, 
-                6
+                self.side * 3 / 55
             ], 
             0
             )
@@ -223,7 +246,7 @@ class CLS_Grid(object):
             str(num), 
             [193, 126, 39], 
             [
-                (lane + 3) * self.side + numLocAdj[noteType][0], 
-                (7 - allThroughLineTime) * self.side + numLocAdj[noteType][1] + disAbove
+                (lane + int((self.colNum + 1) / 2)) * self.side + numLocAdj[noteType][0], 
+                (self.rowNum - allThroughLineTime) * self.side + numLocAdj[noteType][1] + disAbove
             ]
             )
