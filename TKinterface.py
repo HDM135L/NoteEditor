@@ -85,7 +85,8 @@ class CLS_DelNote(object):
         self.root.mainloop()
         
     def deleteNote(self, *args):
-        self.chartManager.delete_note(self.id.get()) 
+        self.chartManager.delete_note(self.id.get())
+        self.root.destroy()
 
 class CLS_ModNote(object):
     def __init__(self, chartManager: CLS_ChartManager):
@@ -141,8 +142,8 @@ class CLS_ModNote(object):
 
     def modifyNote(self, *args):
         self.note_info_check()
-        self.chartManager.modify_note(self.id.get(), None, self.noteType.get(), self.rail.get(), self.startBeat.get() - 1
-                                    , self.touchBeat.get() - 1, self.timeLengthBeat.get())
+        self.chartManager.modify_note(self.id.get(), None, self.noteType.get(), self.rail.get(), self.startBeat.get()
+                                    , self.touchBeat.get(), self.timeLengthBeat.get())
 
     def getNote(self, num):
         info = self.chartManager.noteList[num - 1].get_info()
@@ -179,3 +180,42 @@ class CLS_AdjOffset(object):
         
     def adjOffset(self, *args):
         self.chartManager.startOffset = self.offset.get()
+
+class CLS_ChooseDifficulty(object):
+    def __init__(self, dataManager: CLS_DataManager):
+        self.dataManager = dataManager
+        self.difficultyNames = []
+        for difficulty in self.dataManager.metadata["Difficulties"]:
+            dname = difficulty["DifficultyName"]
+            self.difficultyNames.append(dname)
+
+        version = "v0.1"
+        self.root = Tk()
+        self.root.title("MUNECK Node Editor" + version)
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
+        # self.noteFrame = ttk.Frame(self.root, padding="3 3 12 12")
+        # self.noteFrame.grid(column=10, row=10, columnspan=8, rowspan=9, sticky=(N, W, E, S))
+
+        # self.offset = IntVar()
+        # ttk.Label(self.noteFrame, text="偏移值(Offset) in seconds:").grid(row=5, column=1, rowspan=1, columnspan=2)
+        # ttk.Entry(self.noteFrame, textvariable=self.offset).grid(row=5, column=3, rowspan=1, columnspan=4)
+        # # button add and save
+        
+        self.difficulty = StringVar()
+        combobox = ttk.Combobox(self.root, textvariable = self.difficulty)
+        combobox['value'] = tuple(self.difficultyNames)
+        combobox['state'] = "readonly"
+        combobox.current(0)
+        combobox.grid(column = 1, row = 1)
+        # combobox.bind("<<ComboboxSelected>>", self.getDifficultyName)
+        button = ttk.Button(self.root, text='confirm', command=self.quit)
+        button.grid(row=1, column=2)
+        # btn = ttk.Button(self.noteFrame, text="Confirm", command=self.getDifficultyName())
+        # btn.grid(row=8, column=2, rowspan=2, columnspan=3)
+        # self.root.bind("<Return>", self.adjOffset)
+        self.root.mainloop()
+        
+    def quit(self, *args):
+        self.root.destroy()

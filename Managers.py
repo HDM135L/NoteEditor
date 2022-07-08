@@ -138,8 +138,8 @@ class CLS_DataManager(object):
         self.metapath = os.path.join(rootpath, "meta.json")
         reader.reread(self.metapath)
         self.metadata = reader.get_content()
-        self.chartpath = os.path.join(rootpath, "chart5_output.json")
-        self.meta_saver = CLS_JsonSaver(self.chartpath)
+        
+        
         self.musicpath = os.path.join(rootpath, self.metadata["MusicFile"])
         
         # get charts
@@ -150,7 +150,8 @@ class CLS_DataManager(object):
             chartpath = os.path.join(rootpath, chart_identifier)
 
             self.chartManagers[dname] = CLS_ChartManager(chartpath)
-
+            self.chartpath = os.path.join(rootpath, chartpath)
+            self.meta_saver = CLS_JsonSaver(self.chartpath)
         reader.close()
 
     def save_all_data(self):

@@ -64,7 +64,10 @@ if __name__ == '__main__':
                         #dirname = "./Charts/StillAlive"
                         try:
                             DM.load(dirname)
-                            CM = DM.chartManagers["Easy"]
+                            dname = CLS_ChooseDifficulty(DM)
+                            # print(dname.difficulty.get())
+                            # dname = "Easy"
+                            CM = DM.chartManagers[dname.difficulty.get()]
 
                             grid.load(CM.noteList)
 
@@ -171,17 +174,39 @@ if __name__ == '__main__':
 
                             
                         if grid.inAmode:
-                            noteType = "avoid"
-                            rail = loc[0][1]
-                            startBeat = loc[0][0]
-                            touchBeat = loc[1][0]
-                            timeLengthBeat = loc[2][0] - loc[1][0]
-                            print()
-                            print(loc)
-                            if timeLengthBeat > 0:
+                            if len(loc) == 1:
+                                noteType = "avoid"
+                                rail = loc[0][1]
+                                startBeat = loc[0][0]
+                                touchBeat = loc[0][0]
+                                timeLengthBeat = 0
+                                print()
+                                print(loc)
                                 CM.create_note(None, noteType, rail, startBeat, touchBeat, timeLengthBeat)
-                            loc.clear()
-                            grid.inFHmode = False
+
+                            if len(loc) == 2:
+                                noteType = "avoid"
+                                rail = loc[0][1]
+                                startBeat = loc[0][0]
+                                touchBeat = loc[1][0]
+                                timeLengthBeat = 0
+                                print()
+                                print(loc)
+                                index = CM.get_id(noteType, rail, startBeat, loc[0][0], timeLengthBeat)
+                                CM.modify_note(index, None, noteType, rail, startBeat, touchBeat, timeLengthBeat)
+
+                            if len(loc) == 3:
+                                noteType = "avoid"
+                                rail = loc[0][1]
+                                startBeat = loc[0][0]
+                                touchBeat = loc[1][0]
+                                timeLengthBeat = loc[2][0] - loc[1][0]
+                                print()
+                                print(loc)
+                                index = CM.get_id("avoid", rail, startBeat, touchBeat, 0)
+                                CM.modify_note(index, None, noteType, rail, startBeat, touchBeat, timeLengthBeat)
+                                loc.clear()
+                                grid.inAmode = False
 
 
         if  CM and start < CM.chartLength:
