@@ -43,14 +43,27 @@ if __name__ == '__main__':
                     music.toggle()
                     ready = not ready
                 elif event.key == pygame.K_LEFT and ready:
-                    music.fastBackward()
+                    music.fastBackward(1)
                     start = int(time2beat(music.get_position(), DM.metadata["BPM"]))
                 elif event.key == pygame.K_RIGHT and ready:
-                    music.fastForward()
+                    music.fastForward(1)
+                    start = int(time2beat(music.get_position(), DM.metadata["BPM"]))
+                elif event.key == pygame.K_COMMA and ready:
+                    music.fastBackward(10)
+                    start = int(time2beat(music.get_position(), DM.metadata["BPM"]))
+                elif event.key == pygame.K_PERIOD and ready:
+                    music.fastForward(10)
                     start = int(time2beat(music.get_position(), DM.metadata["BPM"]))
                 elif event.key == pygame.K_r and ready:
                     music.rewind()
                     disAbove = start = 0
+                elif event.key ==pygame.K_f and loaded and not music.isPlaying() and not ready and grid.inAmode == False:
+                    grid.inFHmode = not grid.inFHmode
+                    print(grid.inFHmode)
+                    grid.drawButtons()
+                elif event.key ==pygame.K_a and loaded and not music.isPlaying() and not ready and grid.inFHmode == False:
+                    grid.inAmode = not grid.inAmode
+                    grid.drawButtons()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 # 1 - left click
@@ -62,7 +75,7 @@ if __name__ == '__main__':
                     if onClickButton(grid.buttonLoad):
                         dirname = askdirectory()
                         #dirname = "./Charts/StillAlive"
-                        try:
+                        if dirname != '':
                             DM.load(dirname)
                             dname = CLS_ChooseDifficulty(DM)
                             # print(dname.difficulty.get())
@@ -79,9 +92,7 @@ if __name__ == '__main__':
                             beats = int((CM.chartData["Length"] - offset) * bpm / 60)
                             ready = True
                             loaded = True
-                        except:
-                            pass
-                        
+                    
                     elif onClickButton(grid.buttonSave) and loaded:
                         music.pause()
                         CM.save_chart()
@@ -117,13 +128,13 @@ if __name__ == '__main__':
                         music.unpause()
                         ready = True
 
-                    elif onClickButton(grid.buttonFH) and loaded and not music.isPlaying() and not ready:
+                    elif onClickButton(grid.buttonFH) and loaded and not music.isPlaying() and not ready and grid.inAmode == False:
                         grid.inFHmode = not grid.inFHmode
                         print(grid.inFHmode)
                         grid.drawButtons()
                         # pygame.display.flip()
                     
-                    elif onClickButton(grid.buttonA) and loaded:
+                    elif onClickButton(grid.buttonA) and loaded and not music.isPlaying() and not ready and grid.inFHmode == False:
                         grid.inAmode = not grid.inAmode
                         grid.drawButtons()
                         # pygame.display.flip()
@@ -133,9 +144,11 @@ if __name__ == '__main__':
                             (grid.inFHmode or grid.inAmode) and \
                             not music.isPlaying() and\
                             not ready:
-                        col, row = int(x / grid.side), int(((grid.rowNum + 2) * grid.side - y) / grid.side + 0.5)
+                        col, row = int(x / grid.side), grid.rowNum - int(((y - disAbove) / grid.side) * 2) / 2 + 0.5
                         #first is row, second is col
+                        print(x, y)
                         print(row, col)
+                        print(start)
                         loc.append([start + row - 1, col - int((grid.colNum + 1) / 2)])
                         if grid.inFHmode:
                             if len(loc) == 1:
@@ -207,17 +220,27 @@ if __name__ == '__main__':
                                 CM.modify_note(index, None, noteType, rail, startBeat, touchBeat, timeLengthBeat)
                                 loc.clear()
                                 grid.inAmode = False
-
+                                
+                    elif onClickButton(grid.buttonCopy) and loaded:
+                        music.pause()
+                        ready = False
+                        CLS_CopyNote(CM)
+                        music.unpause()
+                        ready = True
+                
+                if loaded:
+                    CM.save_chart()
 
         if  CM and start < CM.chartLength:
             # print(start)
-            beatOffset = int(time2beat(CM.startOffset, DM.metadata["BPM"]))
+            beatOffset = time2beat(CM.chartOffset, DM.metadata["BPM"])
             grid.paintMovingGrid(CM.noteList, start, disAbove, round(music.get_position(), 2), beatOffset)
+            print(music.get_position())
             if ready == True:
                 disAbove += delta
                 disAbove = disAbove % (grid.side + 1)
                 if(disAbove <= delta):
                     # start += 1
-                    start = int(time2beat(music.get_position(), DM.metadata["BPM"]) + 0.5)
+                    start = int(time2beat(music.get_position(), DM.metadata["BPM"]))
                 
             grid.clock.tick(int(DM.metadata["BPM"] * grid.side / (60 * delta)))

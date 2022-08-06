@@ -9,7 +9,7 @@ class CLS_Grid(object):
         self.rowNum = 7 #number of rows in a page
         self.colNum = 5 #number of columns in a page
         pygame.init()
-        self.screen = pygame.display.set_mode([self.side * 14, self.side * (self.rowNum + 2)])
+        self.screen = pygame.display.set_mode([self.side * (self.colNum + 9), self.side * (self.rowNum + 2)])
         self.screen.fill([255, 255, 255])
         self.clock = pygame.time.Clock()
         self.buttonLoad = [self.side * (self.colNum + 2), self.side, self.side * 2, self.side]
@@ -20,11 +20,16 @@ class CLS_Grid(object):
         self.buttonAdjustOffset = [self.side * (self.colNum + 2), self.side * 7, self.side * 2, self.side]
         self.buttonFH = [self.side * (self.colNum + 2), self.side * 2.5, self.side + 10, self.side]
         self.buttonA = [self.side * (self.colNum + 3.5) + 10, self.side * 2.5, self.side, self.side]
+        self.buttonCopy = [self.side * (self.colNum + 2), self.side * 5.5, self.side * 2, self.side]
         self.font1 = pygame.font.Font(None, self.side * 5 // 11)
         self.font2 = pygame.font.Font(None, self.side * 10 // 11)
         self.inFHmode = False
         self.inAmode = False
         self.grid = [self.side, self.side, self.side * self.colNum, self.side * self.rowNum]
+        self.lineColor = {0 : [0, 0, 0], 1 : [41, 50, 225], 2 : [0, 0, 0], 3 : [41, 50, 225]}
+        self.lineWidth = {0 : 10, 1 : 2, 2 : 5, 3 : 2}
+        self.copyright = "note editor made by Jerry Wen"
+        
 
     def load(self, content):
         self.content = content
@@ -112,6 +117,13 @@ class CLS_Grid(object):
             self.buttonA, 
             0
         )
+        #copy
+        pygame.draw.rect(
+            self.screen, 
+            [237, 125, 49],
+            self.buttonCopy, 
+            0
+        )
         adj = self.side * 4 / 11
         self.write(self.font2, "load", [0, 0, 0], [self.buttonLoad[0] + adj, self.buttonLoad[1] + adj * 0.5])
         self.write(self.font2,"save", [0, 0, 0], [self.buttonSave[0] + adj, self.buttonSave[1] + adj * 0.5])
@@ -120,7 +132,9 @@ class CLS_Grid(object):
         self.write(self.font2,"mod", [0, 0, 0], [self.buttonMod[0] + adj * 1.125, self.buttonMod[1] + adj * 0.5])
         self.write(self.font1,"adjust offset", [0, 0, 0], [self.buttonAdjustOffset[0] + adj * 0.25, self.buttonAdjustOffset[1] + adj])
         self.write(self.font2,"F/H", [0, 0, 0], [self.buttonFH[0] + adj * 0.125, self.buttonFH[1] + adj * 0.5])
-        self.write(self.font2,"A", [0, 0, 0], [self.buttonA[0] + adj * 0.75, self.buttonA[1] +  adj * 0.5])    
+        self.write(self.font2,"A", [0, 0, 0], [self.buttonA[0] + adj * 0.75, self.buttonA[1] +  adj * 0.5])   
+        self.write(self.font2, "copy", [0, 0, 0], [self.buttonCopy[0] + adj, self.buttonCopy[1] + adj * 0.5]) 
+        self.write(self.font1, self.copyright, [0, 0, 0], [self.side * (self.colNum + 3), self.side * 8.5])
 
     def drawBlankSpace(self):
         pygame.draw.rect(
@@ -143,11 +157,34 @@ class CLS_Grid(object):
             7
             )
         
-    def drawGrid(self, disAbove):
+    def drawGrid(self, start, disAbove):
         for x in range(1, self.colNum + 1):
             for y in range(0, self.rowNum + 1):
                 square = [x*self.side, y*self.side + disAbove, self.side, self.side]
                 pygame.draw.rect(self.screen, [0, 0, 0], square, 2)
+
+        for i in range(1, self.rowNum * 2 + 2, 2):
+            pygame.draw.line(
+                self.screen, 
+                [0, 0, 0], 
+                [self.side, i * self.side / 2 + disAbove],
+                [self.side * (self.colNum + 1), i * self.side / 2 + disAbove]
+                )
+
+        for i in range(start, start + self.rowNum):
+            pygame.draw.line(
+                self.screen,
+                self.lineColor[i % 4],
+                [
+                    self.side, 
+                    self.side * (start + self.rowNum - i) + disAbove
+                ],
+                [
+                    self.side * (self.colNum + 1), 
+                    self.side * (start + self.rowNum - i) + disAbove
+                ],
+                self.lineWidth[i % 4]
+            )
 
         #draw a big rect to make the line width outside the same
         pygame.draw.rect(
@@ -159,7 +196,7 @@ class CLS_Grid(object):
 
     def paintMovingGrid(self, notes, start, disAbove, now, offset):
         self.clean()
-        self.drawGrid(disAbove)
+        self.drawGrid(start, disAbove)
         self.drawBeatNum(start, disAbove, now)
         self.paint(start, notes, disAbove, offset)
         self.drawBlankSpace()
@@ -177,7 +214,7 @@ class CLS_Grid(object):
                     round(notes[i].spawnBeat, 2) - start, 
                     round(notes[i].touchBeat, 2)- start, 
                     round((notes[i].timeLengthBeat + notes[i].touchBeat), 2) - start,
-                    disAbove - offset * self.side,
+                    disAbove - int(offset * self.side),
                     i + 1
                     )
 

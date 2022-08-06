@@ -34,12 +34,12 @@ class CLS_Music(object):
     def set_position(self, pos):
         pygame.mixer.music.set_pos(pos)
 
-    def fastForward(self, forwardTime = 10):
+    def fastForward(self, forwardTime):
         self.start = self.get_position() + forwardTime
         if self.start > self.length: self.start = self.length
         self.play()
 
-    def fastBackward(self, backwardTime = 10):
+    def fastBackward(self, backwardTime):
         self.start = self.get_position() - backwardTime
         if self.start < 0: self.start = 0
         self.play()

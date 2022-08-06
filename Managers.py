@@ -22,12 +22,12 @@ class CLS_Note(object):
         self.touchBeat = time2beat(noteinfo["StartTime"], self.offset, self.bpm)
 
     def beat2time(self, beat):
-        return self.offset + beat / self.bpm * 60
+        return self.offset + (beat - self.offset * self.bpm / 60) / self.bpm * 60
 
     def revertBeatToTimeInfo(self):
-        st = self.beat2time(self.touchBeat)
+        st = self.beat2time(self.touchBeat) + self.offset
         dt = st - self.beat2time(self.spawnBeat)
-        tl = self.beat2time(self.timeLengthBeat) - self.offset
+        tl = self.beat2time(self.timeLengthBeat)
         return dict(Type=self.type, Rail=self.rail, Length=tl, StartTime=st, DelayTime=dt)
 
     def get_info(self):
@@ -46,12 +46,13 @@ class CLS_ChartManager(CLS_JsonSaver):
 
         self.chartData = reader.get_content()
         self.chartPath = path
-        self.bpm = 120  # NOTE: This is a test bpm, bind to tk variable
-        self.startOffset = 0
+        self.bpm = self.chartData["BPM"] # NOTE: This is a test bpm, bind to tk variable
+        self.chartOffset = 0
+        self.musicOffset = self.chartData["Offset"]
 
         self.noteList = []
         self.noteNum = self.chartData["NoteNum"]
-        self.chartLength = time2beat(self.chartData["Length"], self.startOffset, self.bpm)
+        self.chartLength = time2beat(self.chartData["Length"], self.chartOffset, self.bpm)
         self.load_all_notes()
 
     def save_chart(self):  # NOTE: API function (external use)
@@ -63,6 +64,7 @@ class CLS_ChartManager(CLS_JsonSaver):
         newChartData = [0] * self.noteNum
         for idx in range(self.noteNum):
             newChartData[idx] = self.noteList[idx].revertBeatToTimeInfo()
+            newChartData[idx]["StartTime"] += self.chartOffset
         self.chartData["NoteList"] = newChartData
         self.save_content(self.chartData)
         print("successfully saved current noteList")
@@ -77,9 +79,9 @@ class CLS_ChartManager(CLS_JsonSaver):
         """
         # create note in either way
         if noteinfo:
-            newnote = CLS_Note(noteinfo, self.bpm, self.startOffset)
+            newnote = CLS_Note(noteinfo, self.bpm, self.chartOffset)
         else:
-            newnote = CLS_Note(None, self.bpm, self.startOffset)
+            newnote = CLS_Note(None, self.bpm, self.chartOffset)
             newnote.type, newnote.rail = Type, Rail
             newnote.spawnBeat, newnote.touchBeat, newnote.timeLengthBeat = SpawnBeat, TouchBeat, TimeLengthBeat
         self.add_note(newnote)
@@ -105,7 +107,7 @@ class CLS_ChartManager(CLS_JsonSaver):
         idx = 0
         self.noteList = [0] * self.chartData["NoteNum"]
         for noteInfo in self.chartData["NoteList"]:
-            self.noteList[idx] = CLS_Note(noteInfo, self.bpm, self.startOffset)
+            self.noteList[idx] = CLS_Note(noteInfo, self.bpm, self.chartOffset)
             # self.noteList[idx].idx = idx
             idx += 1
         return
@@ -122,6 +124,16 @@ class CLS_ChartManager(CLS_JsonSaver):
         self.noteList[id - 1].touchBeat =TouchBeat
         self.noteList[id - 1].timeLengthBeat = TimeLengthBeat
         self.noteList.sort(key = sortKey)
+
+    def copy_note(self, cStartBeat, cEndBeat, pStartBeat, flip):
+        for note in self.noteList:
+            if cStartBeat <= note.touchBeat <= cEndBeat:
+                adj = pStartBeat - cStartBeat
+                rail = note.rail
+                if flip == 'flip':
+                    rail = - rail
+                self.create_note(None, note.type, rail, note.spawnBeat + adj
+                                    , note.touchBeat + adj, note.timeLengthBeat)
 
 class CLS_DataManager(object):
     def __init__(self):

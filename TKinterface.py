@@ -73,11 +73,15 @@ class CLS_DelNote(object):
         self.root.rowconfigure(0, weight=1)
 
         self.noteFrame = ttk.Frame(self.root, padding="3 3 12 12")
+        self.noteFrame.focus_set()
         self.noteFrame.grid(column=1, row=1, columnspan=8, rowspan=9, sticky=(N, W, E, S))
 
         self.id = IntVar()
         ttk.Label(self.noteFrame, text="删除NOTE编号(NoteID to be deleted):").grid(row=5, column=1, rowspan=1, columnspan=2)
-        ttk.Entry(self.noteFrame, textvariable=self.id).grid(row=5, column=3, rowspan=1, columnspan=4)
+        entry = ttk.Entry(self.noteFrame, textvariable=self.id)
+        entry.focus_set()
+        entry.grid(row=5, column=3, rowspan=1, columnspan=4)
+        
         # button add and save
         add_btn = ttk.Button(self.noteFrame, text="DEL", command=self.deleteNote)
         add_btn.grid(row=8, column=2, rowspan=2, columnspan=3)
@@ -179,7 +183,7 @@ class CLS_AdjOffset(object):
         self.root.mainloop()
         
     def adjOffset(self, *args):
-        self.chartManager.startOffset = self.offset.get()
+        self.chartManager.chartOffset = self.offset.get()
 
 class CLS_ChooseDifficulty(object):
     def __init__(self, dataManager: CLS_DataManager):
@@ -219,3 +223,38 @@ class CLS_ChooseDifficulty(object):
         
     def quit(self, *args):
         self.root.destroy()
+
+class CLS_CopyNote(object):
+    def __init__(self, chartManager: CLS_ChartManager):
+        self.chartManager = chartManager
+        version = "v0.1"
+        self.root = Tk()
+        self.root.title("MUNECK Node Editor" + version)
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
+        self.noteFrame = ttk.Frame(self.root, padding="3 3 12 12")
+        self.noteFrame.grid(column=1, row=1, columnspan=8, rowspan=9, sticky=(N, W, E, S))
+        # note type /radioButton
+        self.flip = StringVar()
+        flip = ttk.Radiobutton(self.noteFrame, text='flip', variable=self.flip, value='flip')
+        flip.grid(row=2, column=1, rowspan=1, columnspan=2)
+
+        # NoteInfo /label/Entry
+        self.cStartBeat = DoubleVar()
+        self.cEndBeat = DoubleVar()
+        self.pStartBeat = DoubleVar()
+        ttk.Label(self.noteFrame, text="copy from(beat):").grid(row=5, column=1, rowspan=1, columnspan=2)
+        ttk.Entry(self.noteFrame, textvariable=self.cStartBeat).grid(row=5, column=3, rowspan=1, columnspan=4)
+        ttk.Label(self.noteFrame, text="to(beat):").grid(row=6, column=1, rowspan=1, columnspan=2)
+        ttk.Entry(self.noteFrame, textvariable=self.cEndBeat).grid(row=6, column=3, rowspan=1, columnspan=4)
+        ttk.Label(self.noteFrame, text="paste to(beat):").grid(row=7, column=1, rowspan=1, columnspan=2)
+        ttk.Entry(self.noteFrame, textvariable=self.pStartBeat).grid(row=7, column=3, rowspan=1, columnspan=4)
+        # button add and save
+        add_btn = ttk.Button(self.noteFrame, text="COPY", command=self.copyNotes)
+        add_btn.grid(row=8, column=2, rowspan=2, columnspan=3)
+        self.root.bind("<Return>", self.copyNotes)
+        self.root.mainloop()
+
+    def copyNotes(self, *args):
+        self.chartManager.copy_note(self.cStartBeat.get(), self.cEndBeat.get(), self.pStartBeat.get(), self.flip.get())
