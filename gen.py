@@ -11,6 +11,18 @@ mid = 24
 slow = 32
 note_num = 0
 
+patternList = []#[rail, length, start, typ]
+patternList[0] = [[-2, 0, 0, 1], [0, 0, 1, 1]]
+patternList[1] = [[-1, 0, 0, 1], [1, 0, 1, 1]]
+patternList[2] = [[-2, 1, 0, 2], [-1, 1, 1, 2], [0, 1, 2, 2], [2, 1, 3, 2], [1, 1, 4, 2], [0, 1, 5, 2]]
+patternList[3] = [[0, 2, 0, 2], [-1, 0, 1, 1], [0, 2, 2, 2], [1, 0, 3, 1]]
+patternList[4] = [[-2, 6, 0, 3], [2, 6, 0, 3], [1, 3, 3, 3], [1, 3, 3, 3], [0, 0, 4, 1]]
+patternList[5] = [[-2, 3, 0, 2], [-2, 0, 1, 1], [-2, 0, 3, 1]]
+patternList[6] = [[-2, 3, 0, 2], [2, 3, 0, 3], [-2, 3, 4, 3], [2, 3, 4, 2]]
+patternList[7] = [[0, 1, 0, 2], [1, 1, 0, 2], [0, 0, 1, 1]]
+patternList[8] = [[-2, 1, 0, 3], [-1, 1, 0, 3], [0, 0, 1, 1], [1, 1, 0, 3], [2, 1, 0, 3]]
+patternList[9] = [[-2, 0, 0, 1], [-1, 0, 0, 1], [0, 0, 0, 1], [1, 0, 0, 1], [2, 0, 0, 1]]
+
 def convert_steps(steps):
 	return 15 / bpm * steps
 
@@ -56,9 +68,21 @@ start = convert("76:06")
 end = convert("116:01")
 
 while (start < end):
-	if (random.random() < 0.7):
-		add_str(f, rdt(), start, start, random.choice([fast, mid, mid, slow, slow]))
-	start += convert_steps(16)
+	if (random.random() < 0.2):
+	    add_stair(f, rdt(), start, start, random.choice([fast, mid, mid, slow, slow]))
+            start += convert_steps(16)
+        elif (0.2 <= random.random() < 0.5):
+            i = random.randint(0,1)
+            aList = patternList[i]
+            for n in range(len(aList)):
+                add_stair(aList[n][3], aList[n][0], aList[n][1] * step_len, start + aList[n][2] * step_len,random.choice([fast, mid, mid, slow, slow]))
+            start += aList[len(aList) - 1][2] * step_len
+        elif( 0.5 <= random.random() < 0.7):
+            i = random.randint(2,9)
+            aList = patterList[i]
+            for n in range(len(aList)):
+                add_stair(aList[n][3], aList[n][0], aList[n][1] * step_len, start + aList[n][2] * step_len,random.choice([fast, mid, mid, slow, slow]))
+            start += aList[len(aList) - 1][2] * step_len
 
 print("\t]")
 print("}")
